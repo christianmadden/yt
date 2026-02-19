@@ -42,10 +42,16 @@ func NormalizeQuality(input string) (int, error) {
 	lower := strings.ToLower(s)
 
 	switch lower {
+	case "8k":
+		return 4320, nil
 	case "4k", "uhd":
 		return 2160, nil
-	case "hd", "1080p", "1080":
+	case "2k", "qhd":
+		return 1440, nil
+	case "hd":
 		return 1080, nil
+	case "sd":
+		return 480, nil
 	}
 
 	// Strip trailing 'p' (e.g. "720p" → "720")
@@ -54,7 +60,7 @@ func NormalizeQuality(input string) (int, error) {
 
 	n, err := strconv.Atoi(s)
 	if err != nil {
-		return 0, fmt.Errorf("unrecognized quality %q — try 360, 480, 720, 1080, 1440, or 2160", input)
+		return 0, fmt.Errorf("I'm not familiar with %q. Try 360/480/720/1080/1440/2160/4320 or SD/HD/QHD/4K/UHD/8K", input)
 	}
 	return n, nil
 }
@@ -72,7 +78,7 @@ func SanitizeFilename(title string) string {
 
 // PrintFormats prints available heights in a friendly list.
 func PrintFormats(heights []int) {
-	fmt.Println(bold("Available video heights:"))
+	fmt.Println(bold("Here are the available formats for this video:"))
 	for _, h := range heights {
 		label := heightLabel(h)
 		fmt.Printf("  %s %s\n", green(fmt.Sprintf("%dp", h)), label)
@@ -81,14 +87,16 @@ func PrintFormats(heights []int) {
 
 func heightLabel(h int) string {
 	switch {
+	case h >= 4320:
+		return "(8K)"
 	case h >= 2160:
 		return yellow("(4K / UHD)")
 	case h >= 1440:
-		return "(2K / QHD)"
+		return "(QHD)"
 	case h >= 1080:
-		return "(Full HD)"
-	case h >= 720:
 		return "(HD)"
+	case h >= 720:
+		return "(720p)"
 	case h >= 480:
 		return "(SD)"
 	default:
@@ -100,7 +108,7 @@ func heightLabel(h int) string {
 // Returns the chosen quality height.
 func QualityDialogue(preferred, minimum int, available []int) (int, error) {
 	if len(available) == 0 {
-		return 0, fmt.Errorf("no video streams found")
+		return 0, fmt.Errorf("Hmm, I didn't find any video streams available for this video.")
 	}
 
 	best := available[0] // already sorted descending
@@ -131,7 +139,7 @@ func QualityDialogue(preferred, minimum int, available []int) (int, error) {
 					bold(fmt.Sprintf("%dp", preferred)),
 					yellow(fmt.Sprintf("%dp", best)),
 				)
-				fmt.Printf("  Press Enter for %s, or type a height (or %s for all options): ",
+				fmt.Printf("  Press Enter for %s, or type a format (or %s for all options): ",
 					cyan(fmt.Sprintf("%dp", preferred)),
 					cyan("options"),
 				)
@@ -148,7 +156,7 @@ func QualityDialogue(preferred, minimum int, available []int) (int, error) {
 				bold(fmt.Sprintf("%dp", closestBelow)),
 				preferred,
 			)
-			fmt.Printf("  Press Enter for %s, or type a height (or %s for all options): ",
+			fmt.Printf("  Press Enter for %s, or type a format (or %s for all options): ",
 				cyan(fmt.Sprintf("%dp", closestBelow)),
 				cyan("options"),
 			)
@@ -158,7 +166,7 @@ func QualityDialogue(preferred, minimum int, available []int) (int, error) {
 				bold(fmt.Sprintf("%dp", closestBelow)),
 				minimum,
 			)
-			fmt.Printf("  Press Enter for %s, type a height, %s or %s to cancel (or %s for all options): ",
+			fmt.Printf("  Press Enter for %s, type a format, %s or %s to cancel (or %s for all options): ",
 				cyan(fmt.Sprintf("%dp", closestBelow)),
 				cyan("yes"),
 				cyan("no"),
@@ -173,7 +181,7 @@ func QualityDialogue(preferred, minimum int, available []int) (int, error) {
 				fmt.Printf("%dp", h)
 			}
 			fmt.Println()
-			fmt.Printf("  Type a height to use, or %s to cancel: ", cyan("no"))
+			fmt.Printf("  Type a format to use, or %s to cancel: ", cyan("no"))
 		}
 
 		input, _ := reader.ReadString('\n')
@@ -181,7 +189,7 @@ func QualityDialogue(preferred, minimum int, available []int) (int, error) {
 		lower := strings.ToLower(input)
 
 		if lower == "no" || lower == "n" || lower == "cancel" {
-			return 0, fmt.Errorf("download cancelled")
+			return 0, fmt.Errorf("Download cancelled")
 		}
 
 		if lower == "" || lower == "yes" || lower == "y" {
@@ -228,7 +236,7 @@ func QualityDialogue(preferred, minimum int, available []int) (int, error) {
 // FilenameDialogue asks user to confirm or override the suggested filename.
 func FilenameDialogue(suggested string) string {
 	sanitized := SanitizeFilename(suggested)
-	fmt.Printf("\n%s Save as: ", bold("Filename"))
+	fmt.Print(bold("\nSave as: "))
 	result := Ask("", sanitized)
 	return SanitizeFilename(result)
 }
@@ -242,13 +250,13 @@ func DirectoryDialogue(defaultDir string) string {
 		}
 		defaultDir = cwd
 	}
-	fmt.Printf("\n%s Save to: ", bold("Directory"))
+	fmt.Print(bold("\nSave to: "))
 	return Ask("", defaultDir)
 }
 
 // PrintTitle prints the video title in a friendly way.
 func PrintTitle(title string) {
-	fmt.Printf("\n%s %s\n", bold("Video:"), cyan(title))
+	fmt.Printf("\n%s %s\n", "Okay, we're downloading", cyan(title))
 }
 
 // Info prints a plain informational message.

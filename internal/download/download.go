@@ -7,7 +7,11 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+
+	"github.com/fatih/color"
 )
+
+var gray = color.New(color.FgHiBlack).SprintFunc()
 
 // downloadFilter passes only lines starting with "[download]" to the
 // underlying writer. It handles both \r (progress bar) and \n terminators.
@@ -27,7 +31,8 @@ func (f *downloadFilter) Write(p []byte) (n int, err error) {
 		term := f.buf[i]
 		f.buf = f.buf[i+1:]
 		if bytes.HasPrefix(line, []byte("[download]")) {
-			f.out.Write([]byte("📼" + string(bytes.TrimPrefix(line, []byte("[download]")))))
+			stripped := string(bytes.TrimPrefix(line, []byte("[download]")))
+			f.out.Write([]byte(gray("📼" + stripped)))
 			f.out.Write([]byte{term})
 		}
 	}
