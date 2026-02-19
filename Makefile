@@ -1,5 +1,5 @@
 BINARY=yt
-INSTALL_PATH=/usr/local/bin/$(BINARY)
+INSTALL_PATH=$(HOME)/.local/bin/$(BINARY)
 
 .PHONY: build install uninstall clean
 
