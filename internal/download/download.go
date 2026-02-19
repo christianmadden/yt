@@ -81,6 +81,10 @@ func Run(opts Options) error {
 	}
 	args = append(args, "-o", outputTemplate)
 
+	if !opts.Verbose {
+		args = append(args, "--no-warnings")
+	}
+
 	args = append(args, opts.URL)
 
 	cmd := exec.Command("yt-dlp", args...)
