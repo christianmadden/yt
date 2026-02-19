@@ -27,7 +27,7 @@ func (f *downloadFilter) Write(p []byte) (n int, err error) {
 		term := f.buf[i]
 		f.buf = f.buf[i+1:]
 		if bytes.HasPrefix(line, []byte("[download]")) {
-			f.out.Write(line)
+			f.out.Write([]byte("📼" + string(bytes.TrimPrefix(line, []byte("[download]")))))
 			f.out.Write([]byte{term})
 		}
 	}
