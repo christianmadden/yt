@@ -60,7 +60,7 @@ func NormalizeQuality(input string) (int, error) {
 
 	n, err := strconv.Atoi(s)
 	if err != nil {
-		return 0, fmt.Errorf("I'm not familiar with %q. Try 360/480/720/1080/1440/2160/4320 or SD/HD/QHD/4K/UHD/8K", input)
+		return 0, fmt.Errorf("I'm not familiar with %q. Try 360/480/720/1080/1440/2160/4320 or SD/HD/2K/QHD/4K/UHD/8K", input)
 	}
 	return n, nil
 }
@@ -92,7 +92,7 @@ func heightLabel(h int) string {
 	case h >= 2160:
 		return yellow("(4K / UHD)")
 	case h >= 1440:
-		return "(QHD)"
+		return "(2K / QHD)"
 	case h >= 1080:
 		return "(HD)"
 	case h >= 720:
