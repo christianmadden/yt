@@ -1,4 +1,4 @@
-module github.com/yourusername/yt
+module github.com/christianmadden/yt
 
 go 1.21
 

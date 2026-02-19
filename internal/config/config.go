@@ -9,7 +9,7 @@ import (
 )
 
 const defaultConfig = `# yt configuration
-# https://github.com/yourusername/yt
+# https://github.com/christianmadden/yt
 
 # Target video height in pixels (360/480/720/1080/1440/2160)
 preferred_quality: 1080

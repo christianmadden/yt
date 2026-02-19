@@ -72,4 +72,4 @@ default_dir: ""           # empty = current working directory
 
 ## Module path
 
-Update `go.mod` and imports before pushing: replace `github.com/yourusername/yt` with your GitHub username.
+Module path: `github.com/christianmadden/yt`

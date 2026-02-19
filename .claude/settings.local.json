@@ -6,7 +6,8 @@
       "Bash(go version:*)",
       "Bash(go get:*)",
       "Bash(go build:*)",
-      "Bash(/Users/christian/dev/yt/yt:*)"
+      "Bash(/Users/christian/dev/yt/yt:*)",
+      "Bash(make install:*)"
     ]
   }
 }

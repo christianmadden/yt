@@ -5,10 +5,10 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
-	"github.com/yourusername/yt/internal/config"
-	"github.com/yourusername/yt/internal/download"
-	"github.com/yourusername/yt/internal/fetch"
-	"github.com/yourusername/yt/internal/ui"
+	"github.com/christianmadden/yt/internal/config"
+	"github.com/christianmadden/yt/internal/download"
+	"github.com/christianmadden/yt/internal/fetch"
+	"github.com/christianmadden/yt/internal/ui"
 )
 
 var (
