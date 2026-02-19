@@ -1,11 +1,38 @@
 package download
 
 import (
+	"bytes"
 	"fmt"
+	"io"
 	"os"
 	"os/exec"
 	"path/filepath"
 )
+
+// downloadFilter passes only lines starting with "[download]" to the
+// underlying writer. It handles both \r (progress bar) and \n terminators.
+type downloadFilter struct {
+	buf []byte
+	out io.Writer
+}
+
+func (f *downloadFilter) Write(p []byte) (n int, err error) {
+	f.buf = append(f.buf, p...)
+	for {
+		i := bytes.IndexAny(f.buf, "\r\n")
+		if i < 0 {
+			break
+		}
+		line := f.buf[:i]
+		term := f.buf[i]
+		f.buf = f.buf[i+1:]
+		if bytes.HasPrefix(line, []byte("[download]")) {
+			f.out.Write(line)
+			f.out.Write([]byte{term})
+		}
+	}
+	return len(p), nil
+}
 
 type Options struct {
 	URL       string
@@ -54,14 +81,14 @@ func Run(opts Options) error {
 	}
 	args = append(args, "-o", outputTemplate)
 
-	if opts.Verbose {
-		args = append(args, "--verbose")
-	}
-
 	args = append(args, opts.URL)
 
 	cmd := exec.Command("yt-dlp", args...)
-	cmd.Stdout = os.Stdout
+	if opts.Verbose {
+		cmd.Stdout = os.Stdout
+	} else {
+		cmd.Stdout = &downloadFilter{out: os.Stdout}
+	}
 	cmd.Stderr = os.Stderr
 	cmd.Stdin = os.Stdin
 
