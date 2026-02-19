@@ -1,0 +1,12 @@
+# Binary
+yt
+
+# Go build cache
+/tmp/
+
+# macOS
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
